@@ -66,7 +66,7 @@ const prepare_data_to_request = function prepare_data_to_request(obj) {
 
 module.exports.api = async function request(obj) {
     let {//block set default parameters if not set
-        baseURL = 'https://api.zadarma.com',
+        baseURL = 'https://api.novofon.com',
         api_method = '',
         params = {},
         http_method = 'GET',//GET || POST || PUT || DELETE
