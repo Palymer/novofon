@@ -1,8 +1,8 @@
 const crypto = require('crypto');
 
 /*
-ip zadarma service
-https://my.zadarma.com/api/#apitab-zcrm
+ip novofon service
+https://my.novofon.com/api/#apitab-zcrm
 from the bottom of the page
 */
 
@@ -38,7 +38,7 @@ const parse_incoming_data_to_body_obj = function parse_incoming_data_to_body_obj
           let name = element[1];
           let start = element.input.indexOf(element[0]) + element[0].length;
 
-          /* '--' Zadarma server side bug (headers boundary != body boundary)
+          /* '--' novofon server side bug (headers boundary != body boundary)
           need add '--' to boundry in body or substract '--' from headers boundary */
           let end = element.input.indexOf(`\r\n--${boundary}`, start);
 
@@ -63,18 +63,18 @@ const check_zd_echo = function check_zd_echo(req) {
 
 const verify_data = function verify_data(data_string, signature) {
 
-  let sha1 = crypto.createHmac('sha1', process.env.ZADARMA_SECRET_KEY)
+  let sha1 = crypto.createHmac('sha1', process.env.NOVOFON_SECRET_KEY)
     .update(data_string).digest('hex');
 
   return Buffer.from(sha1).toString('base64') === signature;
 }
 
-const zadarma_events_list = [
+const novofon_events_list = [
   'NOTIFY_START',
   'NOTIFY_INTERNAL',
 
   //The event causing the error
-  'NOTIFY_INTERNAL_END',//Bug !!! Event not in docs https://zadarma.com/ru/support/api/#api_webhooks
+  'NOTIFY_INTERNAL_END',//Bug !!! Event not in docs https://novofon.com/ru/support/api/#api_webhooks
   //Gost Event
 
   'NOTIFY_ANSWER',
@@ -164,7 +164,7 @@ const handlers = {
   },
 
   //Bug !!! Event not in docs
-  //https://zadarma.com/ru/support/api/#api_webhooks
+  //https://novofon.com/ru/support/api/#api_webhooks
   'NOTIFY_INTERNAL_END': function NOTIFY_INTERNAL_END(data, signature) {
     temporary_storage[data.pbx_call_id].event.push(data.event)
     temporary_storage[data.pbx_call_id].internal = data.internal;
@@ -229,7 +229,7 @@ const handlers = {
 let temporary_storage = {};
 const user_handlers = {};
 
-const zadarma_express_handler = async function zadarma_express_handler(req, res) {
+const novofon_express_handler = async function novofon_express_handler(req, res) {
   if (!verify_ip(req)) {
     return res.end()
   }
@@ -241,28 +241,28 @@ const zadarma_express_handler = async function zadarma_express_handler(req, res)
   }
 
   if (check_zd_echo(req)) {
-    //zadarma api performance check
-    console.log('the api zadarma checks the un with an echo request');
+    //novofon api performance check
+    console.log('the api novofon checks the un with an echo request');
     return res.end(req.body.zd_echo);
   }
   
-  const response_from_zadarma = handlers[req.body.event](req.body, req.headers.signature);
+  const response_from_novofon = handlers[req.body.event](req.body, req.headers.signature);
 
   if (typeof user_handlers[req.body.event] === 'function') {
-    return user_handlers[req.body.event](response_from_zadarma, res);
+    return user_handlers[req.body.event](response_from_novofon, res);
   }
 }
 
-zadarma_express_handler.on = function on(event_name, user_callback_function) {
-  if (!zadarma_events_list.includes(event_name)) {
+novofon_express_handler.on = function on(event_name, user_callback_function) {
+  if (!novofon_events_list.includes(event_name)) {
     throw new Error('an unknown event handler is set, set handler from the list:\n' +
-      zadarma_events_list.join(',\n')
+      novofon_events_list.join(',\n')
     );
   }
   user_handlers[event_name] = user_callback_function;
 }
 
-zadarma_express_handler.clear_temporary_storage = function clear_temporary_storage(id) {
+novofon_express_handler.clear_temporary_storage = function clear_temporary_storage(id) {
   if (id) {
     delete temporary_storage[id]
   } else {
@@ -270,8 +270,8 @@ zadarma_express_handler.clear_temporary_storage = function clear_temporary_stora
   }
 }
 
-zadarma_express_handler.get_temporary_storage = function get_temporary_storage() {
+novofon_express_handler.get_temporary_storage = function get_temporary_storage() {
   return temporary_storage;
 }
 
-module.exports = zadarma_express_handler;
+module.exports = novofon_express_handler;

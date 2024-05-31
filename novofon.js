@@ -1,18 +1,3 @@
-/**
-* Zadarma API
-* Author: Andrey Sukhodeev
-* Date: 23.12.2021
-* 
-* Description of methods
-* https://zadarma.com/ru/support/api/
-* https://zadarma.com/en/support/api/
-* 
-* request() returns data from responce / возвращает data из полученного response
-*
-* @request <Object> request_data
-* @return <Object> response_data
-*/
-
 const axios = require('axios');
 const crypto = require('crypto');
 const httpBuildQuery = require('http-build-query');
@@ -37,7 +22,7 @@ const prepare_data_to_request = function prepare_data_to_request(obj) {
 
 
     //Page autorisation rules
-    //https://zadarma.com/ru/support/api/#intro_authorization
+    //https://novofon.com/ru/support/api/#intro_authorization
     let paramsString = '';
 
     if (Object.keys(params).length > 0) {
@@ -61,7 +46,7 @@ const prepare_data_to_request = function prepare_data_to_request(obj) {
             paramsString: paramsString
         }
     }
-    console.error('zadarma: api secret key is not are set!!!')
+    console.error('novofon: api secret key is not are set!!!')
 }
 
 module.exports.api = async function request(obj) {
@@ -70,13 +55,13 @@ module.exports.api = async function request(obj) {
         api_method = '',
         params = {},
         http_method = 'GET',//GET || POST || PUT || DELETE
-        api_user_key = process.env.ZADARMA_USER_KEY,
-        api_secret_key = process.env.ZADARMA_SECRET_KEY,
+        api_user_key = process.env.NOVOFON_USER_KEY,
+        api_secret_key = process.env.NOVOFON_SECRET_KEY,
         timeout = 0//number of milliseconds
     } = obj;
 
     if (api_method === '') {
-        console.error('zadarma: api_method is empty!!!')
+        console.error('novofon: api_method is empty!!!')
     }
 
     let { headers, paramsString } = prepare_data_to_request({
@@ -102,4 +87,4 @@ module.exports.api = async function request(obj) {
     });
 };
 
-module.exports.zadarma_express_handler = require('./zadarma_express_handler');
+module.exports.novofon_express_handler = require('./novofon_express_handler');

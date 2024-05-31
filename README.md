@@ -1,3 +1,8 @@
+# ВНИМАНИЕ !!!
+Этот скрипт был взят готовым. Просто заменены несколько слов. Рефактор не делал. 
+test.js - является быстрым примером того как использовать эту небольшую переделку под новофон (бывшая задарма)
+
+
 [![version](https://img.shields.io/github/package-json/v/gravitymir/zadarma?logo=npm)](https://www.npmjs.com/package/zadarma)
 [![npm downloads per month](https://img.shields.io/npm/dm/zadarma?logo=npm)](https://www.npmjs.com/package/zadarma)
 [![license](https://img.shields.io/npm/l/zadarma?logo=npm)](https://www.npmjs.com/package/zadarma)
